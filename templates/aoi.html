@@ -1,0 +1,76 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Load TensorFlow.js. This is required to use coco-ssd model. -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"> </script>
+    <!-- Load the coco-ssd model. -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"> </script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <title>{{object.name}}</title>
+</head>
+<body>
+    <div class="jumbotron jumbotron-fluid mb-0">
+        <div class="container">
+            <div class="display-4 text-center">{{object.name}}</div>
+        </div>
+    </div>
+
+    <!--OBSERVATIONS IN THIS AREA-->
+    <div class="card-group">
+        {% for obs in object.observations.all %}
+        <div class="card">
+          <img id="image-{{forloop.counter}}" class="card-img-top" src="{{obs.image.url}}" alt="Card image cap">
+          <div class="card-body">
+            <h5 class="card-title">User: {{obs.user.user}}</h5>
+            <p class="card-text">Observed: {{obs.obs_date}}</p>
+            <p class="prediction-{{forloop.counter}} card-text"></p>
+            <p class="card-text"><small class="text-muted">Uploaded: {{obs.upload_date}}</small></p>
+            
+          </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <script>
+        // Notice there is no 'import' statement. 'cocoSsd' and 'tf' is
+        // available on the index-page because of the script tag above.
+        {% for obs in object.observations.all %}
+        const img_{{forloop.counter}} = document.getElementById('image-{{forloop.counter}}');
+        console.log(img_{{forloop.counter}});
+      
+        // Load the model.
+        cocoSsd.load().then(model => {
+          // detect objects in the image.
+          model.detect(img_{{forloop.counter}}).then(predictions => {
+            console.log('Predictions: ', predictions);
+            const show_pred_{{forloop.counter}} = document.querySelector(".prediction-{{forloop.counter}}");
+            show_pred_{{forloop.counter}}.innerHTML = "Prediction: " + predictions[0].class + "<br>Score: " + (predictions[0].score*100).toFixed(4) + "%";
+            const x_{{forloop.counter}} = predictions[0].bbox[0];
+            const y_{{forloop.counter}} = predictions[0].bbox[1];
+            const width_{{forloop.counter}} = predictions[0].bbox[2];
+            const height_{{forloop.counter}} = predictions[0].bbox[3];
+
+            var highligther = document.createElement('div');
+            highligther.setAttribute('class', 'hihglighter{{forloop.counter}}');
+            highligther.style = 'position: absolute; background: rgba(0, 255, 0, 0.25); border: 1px dashed #fff; z-index:9; left:'
+                + predictions[0].bbox[0] + 'px; top: ' 
+                + predictions[0].bbox[1] + 'px; width: ' + predictions[0].bbox[2] + 'px; height: '
+                + predictions[0].bbox[3] + 'px;';
+            var card = document.getElementsByClassName('card')[{{forloop.counter0}}]
+            console.log(card)
+            card.appendChild(highligther);
+            
+          });
+        });
+
+    
+
+        {% endfor %}
+      </script>
+</body>
+</html>
