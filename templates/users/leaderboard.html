@@ -1,0 +1,44 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://kit.fontawesome.com/ab01cf2660.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <title>Leaderboard</title>
+</head>
+<body>
+    <div class="jumbotron jumbotron-fluid mb-0">
+        <div class="container">
+            <div class="display-4 text-center">LEADERBOARD</div>
+        </div>
+    </div>
+
+    <table class="table table-striped">
+        <thead class="thead">
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">First name</th>
+            <th scope="col">Last name</th>
+            <th scope="col">Username</th>
+            <th scope="col">Points</th>
+          </tr>
+        </thead>
+        <tbody>
+            {% for cs in object_list %}
+            <!--Should make these rows clickable and redirect to page with information about the user-->
+            <tr>
+              <th scope="row">{{forloop.counter}}</th>
+              <td>{{ cs.user.first_name }}</td>
+              <td>{{ cs.user.last_name }}</td>
+              <td>{{cs.user.username}}</td>
+              <td>{{ cs.points }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>    
+</body>
+</html>

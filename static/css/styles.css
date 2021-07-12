@@ -1,0 +1,31 @@
+
+
+.observation_img{
+    display: block;
+    position: relative;
+    width: 20vw;
+}
+
+body{
+    margin: 0;
+    padding: 0;
+}
+
+#map {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+}
+
+.navbar {
+    background-color: #200a3a;
+}
+
+nav .container a i {
+    color: whitesmoke;
+}
+
+.nav-link {
+    color: whitesmoke !important; 
+}
