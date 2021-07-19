@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import tensorflow as tf
-from tensorflow.keras import layers
+#import tensorflow as tf
+#from tensorflow.keras import layers
 from iMap.settings import BASE_DIR, STATICFILES_DIRS
 import os
 import json
@@ -26,7 +26,7 @@ Currently the model is stored in the static files directory.
 
 Before we can predict what the image has stored we must perform some preprocessing of the image.
 """
-
+"""
 MODEL_DIR = os.path.join(
     STATICFILES_DIRS[0], 'models', 'ML_MODEL', 'first_model')
 
@@ -56,3 +56,4 @@ def predict_img(img_filepath):
         "This image most likely belongs to {} with a {:.2f} percent confidence."
         .format(class_names[np.argmax(score)], 100 * np.max(score))
     )
+"""
