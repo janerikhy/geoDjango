@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 # Create your models here.
 
@@ -18,3 +20,16 @@ class Scientist(models.Model):
 
     def __str__(self) -> str:
         return f"{self.user.last_name}, {self.user.first_name}"
+
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        CitizenScientist.objects.create(user=instance)
+
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    print(f"Instance={instance}")
+    print(f"Sender={sender}")
+    instance.citizenscientist.save()
