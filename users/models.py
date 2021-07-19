@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 class CitizenScientist(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     points = models.IntegerField(blank=True, default=0)
+    # Should location also be a part of the model?
 
     def __str__(self) -> str:
         return f"{self.user.last_name}, {self.user.first_name}"
