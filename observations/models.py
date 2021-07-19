@@ -32,6 +32,10 @@ class ObservationTest(models.Model):
     user = models.ForeignKey(
         CitizenScientist, on_delete=models.CASCADE, null=True)
 
+    class Meta:
+        permissions = (('can_upload_observation',
+                       'User allowed to upload observations'),)
+
     def save(self, *args, **kwargs):
         super(ObservationTest, self).save(*args, **kwargs)
         img_data = gpsphoto.getGPSData(self.image.path)

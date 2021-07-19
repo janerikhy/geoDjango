@@ -1,41 +1,56 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- Load TensorFlow.js. This is required to use coco-ssd model. -->
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"> </script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
     <!-- Load the coco-ssd model. -->
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"> </script>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+    <!-- Load TensorFlow.js. This is required to use MobileNet. -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.0.1"></script>
+    <!-- Load the MobileNet model. -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@1.0.0"></script>
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
     <title>{{object.name}}</title>
-</head>
-<body>
+  </head>
+  <body>
     <div class="jumbotron jumbotron-fluid mb-0">
-        <div class="container">
-            <div class="display-4 text-center">{{object.name}}</div>
-        </div>
+      <div class="container">
+        <div class="display-4 text-center">{{object.name}}</div>
+      </div>
     </div>
 
     <!--OBSERVATIONS IN THIS AREA-->
     <div class="card-group">
-        {% for obs in object.observations.all %}
-        <div class="card">
-          <img id="image-{{forloop.counter}}" class="card-img-top" src="{{obs.image.url}}" alt="Card image cap">
-          <div class="card-body">
-            <h5 class="card-title">User: {{obs.user.user}}</h5>
-            <p class="card-text">Observed: {{obs.obs_date}}</p>
-            <p class="prediction-{{forloop.counter}} card-text"></p>
-            <p class="card-text"><small class="text-muted">Uploaded: {{obs.upload_date}}</small></p>
-            
-          </div>
+      {% for obs in object.observations.all %}
+      <div class="card">
+        <img
+          id="image-{{forloop.counter}}"
+          class="card-img-top"
+          src="{{obs.image.url}}"
+          alt="Card image cap"
+        />
+        <div class="card-body">
+          <h5 class="card-title">User: {{obs.user.user}}</h5>
+          <p class="card-text">Observed: {{obs.obs_date}}</p>
+          <p class="prediction-{{forloop.counter}} card-text"></p>
+          <p class="card-text">
+            <small class="text-muted">Uploaded: {{obs.upload_date}}</small>
+          </p>
         </div>
-        {% endfor %}
+      </div>
+      {% endfor %}
     </div>
-    
+    <!--
     <script>
         // Notice there is no 'import' statement. 'cocoSsd' and 'tf' is
         // available on the index-page because of the script tag above.
@@ -72,5 +87,23 @@
 
         {% endfor %}
       </script>
-</body>
+      -->
+
+    <!-- Place your code in the script tag below. You can also use an external .js file -->
+    <script>
+      // Notice there is no 'import' statement. 'mobilenet' and 'tf' is
+      // available on the index-page because of the script tag above.
+
+      const img = document.getElementById("image-2");
+
+      // Load the model.
+      mobilenet.load().then((model) => {
+        // Classify the image.
+        model.classify(img).then((predictions) => {
+          console.log("Predictions: ");
+          console.log(predictions);
+        });
+      });
+    </script>
+  </body>
 </html>

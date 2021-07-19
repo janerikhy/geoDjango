@@ -1,14 +1,18 @@
 import observations.utils as ML
 import geocoder
 import os
+from django.urls import reverse_lazy
 from typing import ContextManager, List
 from django.shortcuts import render
-from django.views.generic import ListView, TemplateView, DetailView
-from django.utils.safestring import SafeString
+from django.views.generic import ListView, DetailView, CreateView
+from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required, permission_required
 from iMap.settings import BASE_DIR, GEOCODER_API_KEY
 from .models import AreaOfInterest, NatureReserve, ObservationTest
 from users.models import CitizenScientist
 from iMap.settings import MEDIA_ROOT
+from .forms import UploadImageForm
 
 
 # Create your views here.
@@ -48,3 +52,22 @@ class LeaderboardView(ListView):
     model = CitizenScientist
     template_name = "users/leaderboard.html"
     ordering = ["-points"]
+
+
+@method_decorator(login_required, name="dispatch")
+class UploadView(PermissionRequiredMixin, CreateView):
+    model = ObservationTest
+    form_class = UploadImageForm
+    template_name = "observations/upload.html"
+    success_url = reverse_lazy('home')
+    permission_required = 'observation.can_upload_observation'
+
+    def form_valid(self, form):
+        obj = form.save(commit=False)
+        print(f"user:  {self.request.user}")
+        print(f"user_id: {self.request.user.username}")
+        citizen_scientist = CitizenScientist.objects.get(
+            user__username=self.request.user.username)
+        obj.user = citizen_scientist
+        obj.save()
+        return super(UploadView, self).form_valid(form)
