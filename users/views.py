@@ -1,6 +1,6 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import redirect, render
-from .forms import CitizenScientistForm, CustomUserCreationForm, UserForm
+from .forms import CustomUserCreationForm, UserForm
 from django.views.generic import DetailView, CreateView
 from .models import CitizenScientist
 from django.urls import reverse_lazy
