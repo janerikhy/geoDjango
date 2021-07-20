@@ -1,0 +1,19 @@
+{% extends "base.html" %} {% block title %} {{object.name}} {% endblock title%}
+{% block content%}
+
+<div class="jumbotron jumbotron-fluid">
+  <div class="container">
+    <h1 class="display-3">{{object.user.username}}</h1>
+    <p class="lead">{{object.points}}</p>
+    <hr class="my-2" />
+    <p>Observations</p>
+    {% for obs in observations %} {{obs.image.url}} {% endfor %}
+    <p class="lead">
+      <a class="btn btn-primary btn-lg" href="" role="button"
+        >Jumbo action name</a
+      >
+    </p>
+  </div>
+</div>
+
+{% endblock content %}
