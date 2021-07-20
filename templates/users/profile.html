@@ -1,57 +1,19 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-    <script src="https://kit.fontawesome.com/ab01cf2660.js" crossorigin="anonymous"></script>
-    <link type="text/css" href="{% static 'css/styles.css' %}" rel="stylesheet">
-    <title>{{object.user.username}}</title>
-</head>
-<body>
-    <nav class="navbar navbar-expand navbar-dark" style="z-index: 2;">
-        <div class="container">
-          <a class="navbar-brand" href="#">
-            <i class="fas fa-user-astronaut"></i>
-          </a>
-          <ul class="navbar-nav">
-              <li class="nav-item"><a class="nav-link" href="{% url 'upload' %}">Add Observation</a></li>
-              {% if user.is_authenticated %}
-                <li class="nav-item"><a class="nav-link" href="{% url 'profile' pk=request.user.pk %}">Profile</a></li>
-              {% else %}
-              <li class="nav-item"><a class="nav-link" href="{% url 'sign_up' pk%}">Sign Up</a></li>  
-              {% endif %}
-          </ul>
-        </div>
-      </nav>
-    <div class="container">
-        <div class="jumbotron">
-            <div class="display-3 text-center">WELCOME: {{object.user.username}}</div>
-            <p class="text-center"><strong>Points: {{object.points}}</strong></p>
-        </div>
-    </div>
-    <div class="display-4">
-        Observations
-    </div>
-    <hr>
-      <div class="card-group">
-    {% for obs in observations %}
-      <div class="card m-2">
-        <img class="card-img-top" src="{{obs.image.url}}" alt="Card image cap">
-        <div class="card-body">
-          <h5 class="card-title">Observation: {{obs.location.x}} {{obs.location.y}}</h5>
-          <p class="card-text">{{obs.upload_date}}</p>
-        </div>
-      </div>
-    {% endfor %}
-    </div>
-    <ol>
-    {% for content in plot %}
-      <li>{{plot}}</li>
-    {% endfor %}
-    </ol>
-</body>
-</html>
+{% extends "base.html" %} {% block title %} {{object.name}} {% endblock title%}
+{% block content%}
+
+<div class="jumbotron jumbotron-fluid">
+  <div class="container">
+    <h1 class="display-3">{{object.user.username}}</h1>
+    <p class="lead">{{object.points}}</p>
+    <hr class="my-2" />
+    <p>Observations</p>
+    {% for obs in observations %} {{obs.image.url}} {% endfor %}
+    <p class="lead">
+      <a class="btn btn-primary btn-lg" href="" role="button"
+        >Jumbo action name</a
+      >
+    </p>
+  </div>
+</div>
+
+{% endblock content %}
