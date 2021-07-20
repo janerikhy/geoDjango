@@ -1,0 +1,16 @@
+{% extends "base.html" %} 
+{% load static %}
+
+{% block css_styles %} <link type="text/css" href="{% static 'css/styles.css' %}" rel="stylesheet"> {% endblock css_styles %}
+
+{% block title %}SIGN UP{% endblock title %} 
+
+{% block content %}
+<div class="container">
+    <div class="jumbotron">
+        <button class="btn"><a href="{% url 'sign_up_cs'%}">Citizen Scientist</a></button>
+        <button class="btn"><a href="{% url 'sign_up_researcher' %}">Researcher/Organization</a></button>
+    </div>
+</div>
+
+{% endblock content %}
