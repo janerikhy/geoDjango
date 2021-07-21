@@ -42,7 +42,8 @@ INSTALLED_APPS = [
 
     'observations',
     'users',
-    'challenges'
+    'challenges',
+    'projects',
 ]
 
 MIDDLEWARE = [

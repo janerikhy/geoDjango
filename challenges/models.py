@@ -7,7 +7,11 @@ class Challange(models.Model):
     description = models.TextField(blank=True, null=True)
 
     max_points = models.IntegerField(default=10)
-    users = models.ManyToManyField(CitizenScientist)
+    users = models.ManyToManyField(CitizenScientist, blank=True)
 
     def __str__(self) -> str:
         return f"Challange: {self.name}"
+
+    @classmethod
+    def _default_value(cls):
+        return [cls.objects.first().pk]
