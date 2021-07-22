@@ -42,3 +42,6 @@ class Project(models.Model):
 
     def __str__(self) -> str:
         return f"Project[id={self.pk}]: {self.name}"
+
+    def get_leaderboard(self, **kwargs):
+        pass

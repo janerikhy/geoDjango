@@ -4,7 +4,7 @@
 <script src="{% url 'js-catalog' %}"></script> 
 <script src="{% static '/admin/js/core.js' %}"></script>
 <link rel="stylesheet" href="{% static 'admin/css/widgets.css' %}">
-<link rel="stylesheet" href="{% static 'admin/css/base.css' %}">
+<!--<link rel="stylesheet" href="{% static 'admin/css/base.css' %}">-->
 
 {% endblock css_styles %}
  {% block title %} Create Project {% endblock title%} 
@@ -16,9 +16,8 @@
 </div>
 <form method="POST" enctype="multipart/form-data">
   {% csrf_token %} 
-  {{form.as_p}} 
+  {{form.as_p}}
   {{form.media}}
   <button type="submit">Save Project</button>
 </form>
-
 {% endblock content %}
