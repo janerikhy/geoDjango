@@ -101,7 +101,7 @@ map.on('click', '{{area.name}}', () => {
 {% for observation in observations %}
     var marker = new mapboxgl.Marker()
     .setLngLat([{{observation.lon}}, {{observation.lat}}])
-    .setPopup(new mapboxgl.Popup().setHTML("<div class='lead'>{{observation.obs_date|date:'D d M Y H:i'}}</div><img class='observation_img' src={{observation.image.url}}>"))
+    .setPopup(new mapboxgl.Popup().setHTML("<div class='lead'>{{observation.obs_date|date:'D d M Y H:i'}}</div><a href={% url 'obs_detail' pk=observation.pk username=observation.user %}><img class='observation_img' src={{observation.image.url}}></a>"))
     .addTo(map);
 {% endfor %}
 

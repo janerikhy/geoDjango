@@ -47,7 +47,7 @@ def predict_img(img_filepath):
     results = {}
     scores = list(score.numpy())
     for i in range(len(scores)):
-        results[IMAGE_CLASSIFICATION_LABELS[i]] = str(scores[i])
+        results[IMAGE_CLASSIFICATION_LABELS[i]] = str(round(scores[i]*100, 4))
 
     print(json.dumps(results))
 
