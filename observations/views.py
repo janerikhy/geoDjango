@@ -14,6 +14,7 @@ from users.models import CitizenScientist
 from iMap.settings import MEDIA_ROOT
 from .forms import UploadImageForm
 from .utils import predict_img
+import json
 
 
 # Create your views here.
@@ -36,7 +37,34 @@ class HomeView(ListView):
             #print(os.path.join(BASE_DIR, obs.image.url))
             # print(os.path.abspath(obs.image.url))
             # ML.predict_img(obs.image.path)
+        
 
+        # DON'T THINK THIS IS THE CORRECT FORMAT FOR THIS GEOJSON ITEM
+        obs_geojson = {
+            'type': 'geojson',
+            'data': {
+                'type': 'FeatureCollection',
+                'features': []
+            }
+        }
+        for obs in observations:
+            geojson = json.loads(obs.coordinate.geojson)
+            obs_date = obs.obs_date.strftime("%b %d %Y %H:%M:%S")
+            pk = obs.pk
+            u_name = obs.user
+            href = f"observation/{u_name}/{pk}"
+            src = obs.image.url
+            geojson = {
+                'type': 'Feature',
+                'properties': {
+                    'description': "<div class='lead'>{}</div><a href={}><img class='observation_img' src={}></a>".format(
+                        obs_date, href, src
+                    )
+                },
+                'geometry': geojson
+            }
+            obs_geojson['data']['features'].append(geojson)
+        context['observation_geojson'] = obs_geojson
         return context
 
 

@@ -2,8 +2,10 @@
 
 .observation_img{
     display: block;
-    position: relative;
-    width: 20vw;
+    position: absolute;
+    top:40%;
+    left: 40%;
+    width: 15vw;
 }
 
 body{
