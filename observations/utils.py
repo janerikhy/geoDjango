@@ -1,11 +1,9 @@
+from django.urls.base import reverse
 import matplotlib.pyplot as plt
 import numpy as np
-#import tensorflow as tf
-#from tensorflow.keras import layers
-from iMap.settings import BASE_DIR, STATICFILES_DIRS
-import os
+import tensorflow as tf
 import json
-
+from iMap.settings import IMAGE_CLASSIFICATION_MODEL, IMAGE_CLASSIFICATION_LABELS
 """
 PLAN:
 
@@ -26,17 +24,7 @@ Currently the model is stored in the static files directory.
 
 Before we can predict what the image has stored we must perform some preprocessing of the image.
 """
-"""
-MODEL_DIR = os.path.join(
-    STATICFILES_DIRS[0], 'models', 'ML_MODEL', 'first_model')
 
-model = tf.keras.models.load_model(MODEL_DIR)
-
-json_file = open(os.path.join(MODEL_DIR, 'classes.json'))
-classes = json.load(json_file)
-json_file.close()
-
-class_names = list(classes.values())[0]
 
 IMG_SIZE = 256
 
@@ -49,11 +37,24 @@ def predict_img(img_filepath):
     img_array = np.array(img)
     img_array = tf.expand_dims(img_array, 0)  # Create a batch
 
-    predictions = model.predict(img_array)
+    predictions = IMAGE_CLASSIFICATION_MODEL.predict(img_array)
     score = tf.nn.softmax(predictions[0])
 
     print(
         "This image most likely belongs to {} with a {:.2f} percent confidence."
-        .format(class_names[np.argmax(score)], 100 * np.max(score))
+        .format(IMAGE_CLASSIFICATION_LABELS[np.argmax(score)], 100 * np.max(score))
     )
-"""
+    results = {}
+    scores = list(score.numpy())
+    for i in range(len(scores)):
+        results[IMAGE_CLASSIFICATION_LABELS[i]] = str(round(scores[i]*100, 4))
+
+    print(json.dumps(results))
+
+    # Want to sort the results so that the items with the highest values end up first
+    results = dict(
+        sorted(results.items(), key=lambda item: item[1], reverse=True))
+
+    print(f'Sorted results: {json.dumps(results)}')
+
+    return (IMAGE_CLASSIFICATION_LABELS[np.argmax(score)], 100*np.max(score)), results

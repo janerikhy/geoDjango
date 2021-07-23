@@ -13,6 +13,7 @@ from .models import AreaOfInterest, NatureReserve, ObservationTest
 from users.models import CitizenScientist
 from iMap.settings import MEDIA_ROOT
 from .forms import UploadImageForm
+from .utils import predict_img
 
 
 # Create your views here.
@@ -46,6 +47,15 @@ class AOIView(DetailView):
     template_name = "aoi.html"
     model = AreaOfInterest
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['predictions'] = []
+        observations = self.object.observations.all()
+        for obs in observations:
+            _, prediction_dict = predict_img(obs.image.path)
+            context['predictions'].append(prediction_dict)
+        return context
+
 
 class LeaderboardView(ListView):
     model = CitizenScientist
@@ -59,7 +69,7 @@ class UploadView(PermissionRequiredMixin, CreateView):
     form_class = UploadImageForm
     template_name = "observations/upload.html"
     success_url = reverse_lazy('home')
-    permission_required = 'observation.can_upload_observation'
+    permission_required = 'observations.can_upload_observation'
 
     def form_valid(self, form):
         obj = form.save(commit=False)
@@ -70,3 +80,13 @@ class UploadView(PermissionRequiredMixin, CreateView):
         obj.user = citizen_scientist
         obj.save()
         return super(UploadView, self).form_valid(form)
+
+
+class ObservationDetailView(DetailView):
+    model = ObservationTest
+    template_name = "observations/observation_details.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        _, context['prediction'] = predict_img(self.object.image.path)
+        return context

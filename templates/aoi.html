@@ -46,12 +46,14 @@
     <div class="card-group">
       {% for obs in object.observations.all %}
       <div class="card">
-        <img
-          id="image-{{forloop.counter}}"
-          class="card-img-top"
-          src="{{obs.image.url}}"
-          alt="Card image cap"
-        />
+        <a href="{% url 'obs_detail' pk=obs.pk username=obs.user %}">
+          <img
+            id="image-{{forloop.counter}}"
+            class="card-img-top"
+            src="{{obs.image.url}}"
+            alt="Card image cap"
+          />
+        </a>
         <div class="card-body">
           <h5 class="card-title">User: {{obs.user.user}}</h5>
           <p class="card-text">Observed: {{obs.obs_date}}</p>
@@ -63,44 +65,6 @@
       </div>
       {% endfor %}
     </div>
-    <!--
-    <script>
-        // Notice there is no 'import' statement. 'cocoSsd' and 'tf' is
-        // available on the index-page because of the script tag above.
-        {% for obs in object.observations.all %}
-        const img_{{forloop.counter}} = document.getElementById('image-{{forloop.counter}}');
-        console.log(img_{{forloop.counter}});
-      
-        // Load the model.
-        cocoSsd.load().then(model => {
-          // detect objects in the image.
-          model.detect(img_{{forloop.counter}}).then(predictions => {
-            console.log('Predictions: ', predictions);
-            const show_pred_{{forloop.counter}} = document.querySelector(".prediction-{{forloop.counter}}");
-            show_pred_{{forloop.counter}}.innerHTML = "Prediction: " + predictions[0].class + "<br>Score: " + (predictions[0].score*100).toFixed(4) + "%";
-            const x_{{forloop.counter}} = predictions[0].bbox[0];
-            const y_{{forloop.counter}} = predictions[0].bbox[1];
-            const width_{{forloop.counter}} = predictions[0].bbox[2];
-            const height_{{forloop.counter}} = predictions[0].bbox[3];
-
-            var highligther = document.createElement('div');
-            highligther.setAttribute('class', 'hihglighter{{forloop.counter}}');
-            highligther.style = 'position: absolute; background: rgba(0, 255, 0, 0.25); border: 1px dashed #fff; z-index:9; left:'
-                + predictions[0].bbox[0] + 'px; top: ' 
-                + predictions[0].bbox[1] + 'px; width: ' + predictions[0].bbox[2] + 'px; height: '
-                + predictions[0].bbox[3] + 'px;';
-            var card = document.getElementsByClassName('card')[{{forloop.counter0}}]
-            console.log(card)
-            card.appendChild(highligther);
-            
-          });
-        });
-
-    
-
-        {% endfor %}
-      </script>
-      -->
 
     <!-- Place your code in the script tag below. You can also use an external .js file -->
     <script>
