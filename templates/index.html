@@ -14,7 +14,7 @@
     <title>iMap</title>
 </head>
 <body>
-    <nav class="navbar navbar-dark" style="z-index: 2;">
+    <nav class="navbar navbar-dark navbar-expand" style="z-index: 2;">
         <div class="container">
           <a class="navbar-brand" href="#">
             <i class="fas fa-user-astronaut"></i>
@@ -30,9 +30,22 @@
         </div>
       </nav>
     <div id='map'></div>
-    {% for obs in observations %}
-        {{obs.address}}
-    {% endfor %}
+    <div class="filter" id="filter_box">
+        <ul>
+            <li class="filter_item display_area">
+                <button class="btn btn-sm btn-secondary" id="display-area">Hide Areas</button>
+            </li>
+            <li class="filter_item area_opacity">FILTER 2</li>
+            <li class="filter_item area_dropdown">FILTER 3</li>
+            <li class="filter_item">FILTER 4</li>
+        </ul>
+    </div>
+
+    <div class="last_upload">
+        <button class="btn btn-sm btn-info rounded-pill text-light">
+            <a class="text-decoration-none text-light" href="{% url 'obs_detail' pk=last_observation.pk username=last_observation.user %}">Most recent observation: {{last_observation.user.user}}, at: {{last_observation.upload_date}}</a>
+        </button>
+    </div>
     
 <script>
 // TO MAKE THE MAP APPEAR YOU MUST
@@ -43,9 +56,10 @@ var map = new mapboxgl.Map({
 container: 'map', // container id
 style: 'mapbox://styles/oceandatafoundation/ckbujyuqu0kah1kpbctq4lemg', // style URL
 center: [10.620725, 59.904199], // starting position [lng, lat]
-zoom: 12 // starting zoom
+zoom: 12, // starting zoom
+pitch: 40
 });
-/*
+
 {% for area in areas %}
 
 map.on('load', function () {
@@ -63,10 +77,12 @@ map.on('load', function () {
         'id': '{{area.name}}',
         'type': 'fill',
         'source': '{{area.name}}', // reference the data source
-        'layout': {},
+        'layout': {
+            'visibility': 'visible'
+        },
         'paint': {
             'fill-color': '#0080ff', // blue color fill
-            'fill-opacity': 0.5
+            'fill-opacity': 0.1
         }
     });
 
@@ -94,7 +110,7 @@ map.on('click', '{{area.name}}', () => {
 });
 
 {% endfor %}
-*/
+
 map.on('load', () => {
     map.addSource('observations-layer', obs_geojson);
     map.addLayer({
@@ -150,17 +166,17 @@ map.on('load', () => {
             'interpolate',
             ['linear'],
             ['zoom'],
-            7,
+            6,
             10,
             13,
-            19
+            20
             ],
             // Transition from heatmap to circle layer by zoom level
             'heatmap-opacity': [
             'interpolate',
             ['linear'],
             ['zoom'],
-            7,
+            6,
             1,
             16,
             0
@@ -180,7 +196,7 @@ map.on('load', () => {
         'id': 'observations-points',
         'type': 'circle',
         'source': 'observations-layer',
-        'minzoom': 12,
+        'minzoom': 14,
         'paint': {
             // Size circle radius by earthquake magnitude and zoom level
             'circle-radius': [
@@ -217,7 +233,7 @@ map.on('load', () => {
             'interpolate',
             ['linear'],
             ['zoom'],
-            12,
+            14,
             0,
             19,
             1
@@ -286,6 +302,32 @@ map.on('mouseenter', '.marker', () => {
 
 map.on('mouseleave', 'marker', () => {
     map.getCanvas().style.cursor = "";
+});
+
+
+var area_btn = document.getElementById("display-area")
+area_btn.addEventListener('click', () => {
+    {% for area in areas %}
+    var visibility = map.getLayoutProperty(
+        '{{area.name}}',
+        'visibility'
+    );
+    if (visibility == 'visible'){
+        map.setLayoutProperty(
+            '{{area.name}}',
+            'visibility',
+            'none'
+        );
+        area_btn.innerText = 'Show Areas';
+    } else {
+        map.setLayoutProperty(
+            '{{area.name}}',
+            'visibility',
+            'visible'
+        );
+        area_btn.innerTest = 'Hide Areas';
+    }
+    {% endfor %}
 });
 
 </script>

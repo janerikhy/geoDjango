@@ -30,16 +30,12 @@ class HomeView(ListView):
         areas = AreaOfInterest.objects.all()
         context['observations'] = observations
         context['areas'] = areas
+        context['last_observation'] = ObservationTest.objects.all().order_by('-upload_date')[0]
         context['locations'] = []
         for obs in observations:
             context['locations'].append(geocoder.google(
                 [obs.lat, obs.lon], method="reverse", key=GEOCODER_API_KEY))
-            #print(os.path.join(BASE_DIR, obs.image.url))
-            # print(os.path.abspath(obs.image.url))
-            # ML.predict_img(obs.image.path)
-        
-
-        # DON'T THINK THIS IS THE CORRECT FORMAT FOR THIS GEOJSON ITEM
+            
         obs_geojson = {
             'type': 'geojson',
             'data': {
@@ -57,7 +53,7 @@ class HomeView(ListView):
             geojson = {
                 'type': 'Feature',
                 'properties': {
-                    'description': "<div class='lead'>{}</div><a href={}><img class='observation_img' src={}></a>".format(
+                    'description': "<div class='observation_popup'><div class='lead'>{}</div><a href={}><img class='observation_img' src={}></a></div>".format(
                         obs_date, href, src
                     )
                 },

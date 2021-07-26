@@ -26,7 +26,7 @@ Before we can predict what the image has stored we must perform some preprocessi
 """
 
 
-IMG_SIZE = 256
+IMG_SIZE = 224
 
 
 def predict_img(img_filepath):
@@ -38,12 +38,17 @@ def predict_img(img_filepath):
     img_array = tf.expand_dims(img_array, 0)  # Create a batch
 
     predictions = IMAGE_CLASSIFICATION_MODEL.predict(img_array)
+    
     score = tf.nn.softmax(predictions[0])
 
+    print(f'Predictions: {tf.nn.sigmoid(predictions)}')
+    print(f"Predictions: {tf.where(tf.nn.sigmoid(predictions) < 0.5, 0, 1)}")
+    print(f"Score: {list(score.numpy())}")
     print(
         "This image most likely belongs to {} with a {:.2f} percent confidence."
         .format(IMAGE_CLASSIFICATION_LABELS[np.argmax(score)], 100 * np.max(score))
     )
+    print(IMAGE_CLASSIFICATION_LABELS)
     results = {}
     scores = list(score.numpy())
     for i in range(len(scores)):

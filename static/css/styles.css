@@ -1,11 +1,11 @@
 
+.observation_popup{
+    position: relative;
+    max-width: 15vw;
+}
 
-.observation_img{
-    display: block;
-    position: absolute;
-    top:40%;
-    left: 40%;
-    width: 15vw;
+.observation_img {
+    width: 100%;
 }
 
 body{
@@ -30,4 +30,29 @@ nav .container a i {
 
 .nav-link {
     color: whitesmoke !important; 
+}
+
+
+.filter {
+    position: relative;
+    z-index: 10;
+    top: 0;
+    left: 0;
+}
+
+.filter ul {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+
+.filter ul li {
+    list-style: none;
+}
+
+.last_upload {
+    position: absolute;
+    bottom: 3vh;
+    left: 3vw;
+    z-index: 5;
 }
