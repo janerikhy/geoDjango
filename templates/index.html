@@ -43,9 +43,12 @@
 
     <div class="last_upload">
         <button class="btn btn-sm btn-info rounded-pill text-light">
-            <a class="text-decoration-none text-light" href="{% url 'obs_detail' pk=last_observation.pk username=last_observation.user %}">Most recent observation: {{last_observation.user.user}}, at: {{last_observation.upload_date}}</a>
+            <a class="text-decoration-none text-light" href="{% url 'obs_detail' pk=last_observation.pk username=last_observation.user %}">
+            {{last_observation.user.user}} uploaded an observation: <i class="text-ligth" id="last-update">{{last_observation.upload_date|date:"r"}}</i>
+            </a>
         </button>
     </div>
+<script src="{% static 'js/last_upload.js' %}"></script>
     
 <script>
 // TO MAKE THE MAP APPEAR YOU MUST

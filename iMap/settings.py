@@ -137,6 +137,7 @@ LOGIN_REDIRECT_URL = '/'
 # Directory for Image Classification Machine Learning models
 MODEL_DIR = os.path.join(STATICFILES_DIRS[0], 'models', 'ML_MODEL')
 MODEL = os.path.join(MODEL_DIR, os.listdir(MODEL_DIR)[-1])
+print(f"\t\tMODEL PATH: {MODEL} \t\t")
 
 
 # Load the model
