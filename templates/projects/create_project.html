@@ -1,15 +1,14 @@
-{% extends "base.html" %} 
-{% load static %}
-{% block css_styles %} 
-<script src="{% url 'js-catalog' %}"></script> 
+{% extends "base.html" %} {% load static %} {% block css_styles %}
+<script src="{% url 'js-catalog' %}"></script>
 <script src="{% static '/admin/js/core.js' %}"></script>
-<link rel="stylesheet" href="{% static 'admin/css/widgets.css' %}">
+<link rel="stylesheet" href="{% static 'admin/css/widgets.css' %}" />
 <!--<link rel="stylesheet" href="{% static 'admin/css/base.css' %}">-->
+<link rel="stylesheet" href="{% static 'css/project_form.css ' %}">
 
-{% endblock css_styles %}
- {% block title %} Create Project {% endblock title%} 
- {% block content %}
+{% endblock css_styles %} {% block title %} Create Project {% endblock title%}
+{% block content %}
 
+<!--
 
 <div class="container">
   <div class="display-3">Create New Project Here</div>
@@ -20,4 +19,172 @@
   {{form.media}}
   <button type="submit">Save Project</button>
 </form>
+
+
+-->
+
+<!--MULTIPAGE FORM -->
+
+{% load project_extras %}
+<div class="container-fluid text-center bg-secondary d-flex flex-row justify-content-center align-items-center w-100" style="height: 100vh;">
+  <div class="row m-0 p-1 w-50 h-75 bg-light d-flex flex-row justify-content-start align-items-start border rounded">
+    <div class="col-12">
+      <form method="post" enctype="multipart/form-data" class="form" id="projectForm">
+        <div class="display-4">Create Project</div>
+        Form Valid: {{form.is_valid}}: 
+        <div class="progress-bar"></div>
+        <hr>
+        {% csrf_token %}
+        {{form.errors}}
+        {{form.non_field_errors}}
+        <!--Project Essentials-->
+        <div class="row tabb">
+          
+          <div class="name">
+            {{form.name.label_tag}}
+            {{form.name}}
+
+            {{form.creators.label_tag}}
+            {{form.creators}}
+            <div class="checkbox {% if form|validate_name:'name' %}is-valid{% endif %}"></div>
+          </div>
+          <div class="time d-flex flex-row justify-content-between">
+            {{form.media}}
+            <div class="start_time">
+              {{form.start_time.label_tag}}
+              {{form.start_time}}
+              <div class="checkbox {% if form|validate_date:'start_time' %}is-valid{% endif %}"></div>
+            </div>
+            <div class="end_time">
+              {{form.end_time.label_tag}}
+              {{form.end_time}}
+              {{form.end_time.label}}
+              {{form.end_time.errors}}
+              
+              <div class="checkbox {% if form|validate_date:'end_time' %}is-valid{% endif %}"></div>
+            </div>
+            {{form.errors.keys}}
+          </div>
+        </div>
+        <!-- Location -->
+        <div class="row tabb m-0 p-0">
+          {{form.areas.label_tag}}
+          <div class="current_location">
+            {{form.areas}}
+            <div class="checkbox {% if form|validate_polygon:'location' %}is-valid{% else %}''{% endif %}"></div>
+          </div>
+          
+        </div>
+        <!-- Location Details -->
+        <div class="row tabb">
+          {{form.environments.label_tag}}
+          {{form.environments}}
+        </div>
+        <!-- Project Details -->
+        <!--<div class="row tabb"></div>-->
+        <!-- Challanges etc -->
+        <div class="row tabb">
+          {{form.species.label_tag}}
+          {{form.species}}
+
+          {{form.challenges.label_tag}}
+          {{form.challenges}}
+        </div>
+        
+        <!-- Organizers and Sponsors -->
+        <div class="row tabb">
+          {{form.organizers.label_tag}}
+          {{form.organizers}}
+
+          {{form.sponsors.label_tag}}
+          {{form.sponsors}}
+        </div>
+        <!-- Project Essentials -->
+        <div class="row tabb">
+          {{form.description.label_tag}}
+          {{form.description}}
+
+          {{form.image.label_tag}}
+          {{form.image}}
+
+          {{form.video.label_tag}}
+          {{form.video}}
+        </div>
+        <div class="row">
+          <div class="col-12 px-3 mt-5 d-flex flex-row justify-content-between align-content-end controllers">
+            <button type="button" class="btn btn-primary" onclick="nextPrev(-1)" id="prevBtn">Prev</button>
+            <button type="button" class="btn btn-outline-primary" onclick="nextPrev(1)" id="nextBtn">Next</button>
+          </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  var currentTab = 0;
+  showTab(currentTab);
+
+  function showTab(n) {
+    var x = document.getElementsByClassName("tabb");
+    x[n].style.display = "block";
+
+    var nextBtn = document.getElementById("nextBtn");
+    var prevBtn = document.getElementById("prevBtn");
+
+    if (n==0){
+      prevBtn.style.display = "none";
+    } else {
+      prevBtn.style.display = "block";
+    }
+    if (n == (x.length - 1)){
+      nextBtn.innerHTML = "Done";
+    }
+    else {
+      nextBtn.innerHTML = "Next";
+    }
+
+  }
+
+
+  function nextPrev(n) {
+    var x = document.getElementsByClassName("tabb");
+    var is_valid = true;
+    if (n == 1 && !is_valid) return false;
+    x[currentTab].style.display = "none";
+    currentTab = currentTab + n;
+    if (currentTab >= x.length){
+      document.getElementById('projectForm').submit();
+      return false;
+    }
+    showTab(currentTab);
+  };
+
+  function validation() {
+    var x = document.getElementsByClassName('tabb')[currentTab]; // The current tabb element
+    var fields = x.querySelectorAll('.checkbox');
+    var bools = []
+    for (let i = 0; i < fields.length; i++){
+      if (fields[i].classList.contains("is-valid")){
+        bools.push(true);
+      }
+      else{
+        bools.push(false);
+      }
+    }
+    console.log(bools);
+    var is_true = (state) => {return state == true};
+    console.log(bools.every(is_true));
+    if (bools.every(is_true)){
+      return true;
+    }
+    else{
+      return false;
+    }
+
+  };
+
+
+
+</script>
+
 {% endblock content %}

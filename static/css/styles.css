@@ -1,4 +1,7 @@
-
+html, body {
+    overflow: hidden;
+    box-sizing: border-box;
+}
 
 .observation_img{
     display: block;
