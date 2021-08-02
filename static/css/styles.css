@@ -1,5 +1,4 @@
 html, body {
-    overflow: hidden;
     box-sizing: border-box;
 }
 
@@ -32,3 +31,5 @@ nav .container a i {
 .nav-link {
     color: whitesmoke !important; 
 }
+
+/*     PROJECT FORM      */

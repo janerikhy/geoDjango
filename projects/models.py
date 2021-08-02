@@ -61,18 +61,17 @@ class Reward(models.Model):
         return self.name
 
 
-
 class Project(models.Model):
     """
     Project model for researchers. The model will store the location and other relevant features of a project.
     """
+    owner = models.ForeignKey(Scientist, on_delete=models.CASCADE)
     name = models.CharField(blank=False, max_length=250)
     description = models.TextField()
     image = models.ImageField(upload_to=f"projects/images")
     challenges = models.ManyToManyField(
         Challange, default=Challange._default_value())
     participants = models.ManyToManyField(CitizenScientist, blank=True)
-    creators = models.ManyToManyField(Scientist)
     video = models.FileField(upload_to="projects/videos",
                              validators=[FileExtensionValidator(['MOV', 'mp4', 'avi', 'mov', 'MP4'], 'The file format is not accepted')])
     species = models.ManyToManyField(Species)

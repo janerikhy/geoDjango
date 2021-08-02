@@ -1,6 +1,8 @@
+from typing import Sized
 from django.shortcuts import get_object_or_404, render
 from django.views.generic import CreateView, DetailView, ListView
 from .models import Project
+from users.models import Scientist
 from .forms import ProjectForm
 from django.urls import reverse_lazy
 from users.decorators import researcher_required
@@ -15,8 +17,18 @@ class ProjectCreateView(CreateView):
     # view for creating new projects
     model = Project
     form_class = ProjectForm
-    template_name = "projects/create_project.html"
+    template_name = "projects/create_proj.html"
     success_url = reverse_lazy('projects')
+
+    def form_valid(self, form):
+        project = form.save(commit=False)
+        print(f"Project: {project}")
+        print(f"User: {self.request.user}")
+        project.owner = Scientist.objects.filter(user=self.request.user)[0]
+        project.save()
+        return super(ProjectCreateView, self).form_valid(form)
+
+
 
 
 class ProjectsListView(ListView):

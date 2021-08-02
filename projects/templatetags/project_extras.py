@@ -1,6 +1,8 @@
 from django import template
 import datetime
 from django.contrib.gis.geos import Polygon, polygon
+from django.core.exceptions import EmptyResultSet
+from projects.forms import ProjectForm
 
 register = template.Library()
 
@@ -17,29 +19,33 @@ def validate(error_dict, k):
     else:
         return False
 
-
-@register.filter(name="validate_name")
-def validate_name(form, name):
-    if isinstance(name, str):
-        if len(name) < form.fields['name'].max_length:
-            return True
-    else:
-        return False
-
 @register.filter()
-def validate_date(form, date):
-    print(f"Form: {form}")
-    print(date)
-    print(f"type: {type(date)}")
-    if isinstance(date, datetime.datetime):
-        if date >= datetime.datetime.now():
-            return True
-    else:
-        return False
-
-@register.filter()
-def validate_polygon(form, figure):
-    if isinstance(figure, Polygon):
+def in_request(post_request, key):
+    if key in post_request:
         return True
     else:
         return False
+
+@register.filter()
+def form_instance(form, postreq):
+    f = ProjectForm(postreq)
+    print(postreq)
+    print(f"Species current values: {f['species'].value()}")
+    print(f"Species Choices: {f['species'].field.queryset.all()}")
+    if f.is_valid():
+        print(f.cleaned_data)
+        return f.cleaned_data
+    else:
+        return f.fields
+
+
+@register.filter()
+def formfield_value(form, key):
+    if form[key].value():
+        return form[key].value()
+    else:
+        return []
+
+@register.filter()
+def to_str(val):
+    return str(val)
