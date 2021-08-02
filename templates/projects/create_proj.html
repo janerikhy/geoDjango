@@ -4,6 +4,9 @@
 
 {% block css_styles %}
 <script src="{% url 'js-catalog' %}"></script>
+<script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+<script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.2.2/mapbox-gl-draw.js"></script>
+<link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.2.2/mapbox-gl-draw.css" type="text/css">
 <script src="{% static '/admin/js/core.js' %}"></script>
 <link rel="stylesheet" href="{% static 'admin/css/widgets.css' %}" />
 <script src='https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.js'></script>
@@ -47,33 +50,37 @@
                     {{form.media}}
                     <div class="row mt-5">
                         <p><strong>Timeline</strong></p>
+                        {{form.start_time.errors}}
                         <div class="col-6 project-start_time">
                             {{form.start_time.label_tag}}
                             {{form.start_time}}
                         </div>
                         <div class="col-6 project-end_time">
+                            {{form.end_time.errors}}
                             {{form.end_time.label_tag}}
                             {{form.end_time}}
                         </div>
                     </div>
-                    <p><strong>Public project: </strong>{{form.is_public}}</p>
+                    <p class="mt-5"><strong>Public project: </strong>{{form.is_public}}</p>
                     
                 </div>
                 <!--  LOCATION -->
                 <div class="form-tab" id="location">
-                    <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
-                    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.2.2/mapbox-gl-draw.js"></script>
-                    <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.2.2/mapbox-gl-draw.css" type="text/css">
+                    
                     <div class="row">
                     
                         <div class="col-9">
+                            
                             <p><strong>Project Area</strong></p>
-                            <div id="form_map" style="width:100%; height: 100%;"></div>
+                            {{form.location.errors}}
+                            {{form.location}}
+                            <!--<div id="form_map" style="width:100%; height: 100%;"></div>-->
                             <!--<textarea id="id_location" class="vSerializedField required" cols="150" rows="10" name="location" style="display: none;"></textarea>-->
                         </div>
                         <div class="col-3 d-flex flex-column" id="areas">
                             <!--THE LIST OF AREAS GOES HERE. On clich, display area in map-->
                             <p><strong>Other Areas</strong></p>
+                            <!--
                             {% for key, area in form.areas.field.choices %}            
                             <label for="id_areas_{{forloop.counter0}}" class="btn btn-outline-primary {% if key|to_str in form|formfield_value:'areas' %}active{% endif %}" >
                                 <input id="id_areas_{{forloop.counter0}}" name="areas" type="checkbox" value="{{key}}" {% if key|to_str in form|formfield_value:'areas' %}checked{%endif%} 
@@ -81,6 +88,7 @@
                                 {{area}}
                             </label>
                             {% endfor %}
+                            -->
                             <div id="add_area">
                                 <a href="{% url 'create-area' %}">
                                     <i class="fas fa-plus"></i> Add area
@@ -163,12 +171,15 @@
                 <!-- Description -->
                 <div class="form-tab" id="description">
                     <p><strong>Proect Description</strong></p>
+                    {{form.description.errors}}
                     {{form.description}}
                     <hr>
                     <p><strong>Video:</strong></p>
+                    {{form.video.errors}}
                     {{form.video}}
                     <hr>
                     <p><strong>Image:</strong></p>
+                    {{form.image.errors}}
                     {{form.image}}
                 </div>
                 
@@ -176,7 +187,7 @@
                 <button type="button" class="btn btn-primary rounded-pill" id="next">Next</button>
             </form>
             <script>
-
+                /*
                 mapboxgl.accessToken = 'pk.eyJ1Ijoib2NlYW5kYXRhZm91bmRhdGlvbiIsImEiOiJjazk5bGxpNWkwYWU1M2Vya3hkcHh4czdrIn0.yf7kIiPfDNE7KP9_9wTN6A';
                     var map = new mapboxgl.Map({
                     container: 'form_map', // container id
@@ -243,7 +254,7 @@
                     data = data['features'][0]['geometry'];
                     locationInput.value = JSON.stringify(data);
                 }
-
+                */
                 var checked_areas = [];
 
                 var prev = document.querySelector("#prev");

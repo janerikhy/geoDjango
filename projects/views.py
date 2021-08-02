@@ -1,3 +1,4 @@
+from observations.models import AreaOfInterest
 from typing import Sized
 from django.shortcuts import get_object_or_404, render
 from django.views.generic import CreateView, DetailView, ListView
@@ -25,6 +26,11 @@ class ProjectCreateView(CreateView):
         print(f"Project: {project}")
         print(f"User: {self.request.user}")
         project.owner = Scientist.objects.filter(user=self.request.user)[0]
+        # Create new area from drawn location
+        area = AreaOfInterest(name=project.name, area=project.location, scientist=project.owner)
+        area.save()
+        project.save()
+        project.areas.add(area)
         project.save()
         return super(ProjectCreateView, self).form_valid(form)
 
