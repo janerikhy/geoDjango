@@ -61,14 +61,19 @@
                 </div>
                 <!--  LOCATION -->
                 <div class="form-tab" id="location">
+                    <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+                    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.2.2/mapbox-gl-draw.js"></script>
+                    <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.2.2/mapbox-gl-draw.css" type="text/css">
                     <div class="row">
-                        <div class="col-8">
-                            
+                    
+                        <div class="col-9">
+                            <p><strong>Project Area</strong></p>
                             <div id="form_map" style="width:100%; height: 100%;"></div>
+                            <!--<textarea id="id_location" class="vSerializedField required" cols="150" rows="10" name="location" style="display: none;"></textarea>-->
                         </div>
-                        <div class="col-4 d-flex flex-column" id="areas">
+                        <div class="col-3 d-flex flex-column" id="areas">
                             <!--THE LIST OF AREAS GOES HERE. On clich, display area in map-->
-                            {{request.POST}}
+                            <p><strong>Other Areas</strong></p>
                             {% for key, area in form.areas.field.choices %}            
                             <label for="id_areas_{{forloop.counter0}}" class="btn btn-outline-primary {% if key|to_str in form|formfield_value:'areas' %}active{% endif %}" >
                                 <input id="id_areas_{{forloop.counter0}}" name="areas" type="checkbox" value="{{key}}" {% if key|to_str in form|formfield_value:'areas' %}checked{%endif%} 
@@ -77,9 +82,11 @@
                             </label>
                             {% endfor %}
                             <div id="add_area">
-                                
+                                <a href="{% url 'create-area' %}">
+                                    <i class="fas fa-plus"></i> Add area
+                                </a>
                             </div>
-                        </div>
+                        </div>                        
                     </div>
                     <!-- Not sure whether to render the Mapbox GL map or the admin map -->
                     
@@ -175,7 +182,7 @@
                     container: 'form_map', // container id
                     style: 'mapbox://styles/oceandatafoundation/ckbujyuqu0kah1kpbctq4lemg', // style URL
                     center: [10.588725, 59.836199], // starting position [lng, lat]
-                    zoom: 10 // starting zoom
+                    zoom: 8 // starting zoom
                 });
 
                 
@@ -217,6 +224,25 @@
                     {% endfor %}
                 });
 
+                var draw = new MapboxDraw({
+                    displayControlsDefault: false,
+                    // Select which mapbox-gl-draw control buttons to add to the map.
+                    controls: {
+                    polygon: true,
+                    trash: true
+                    },
+                    // Set mapbox-gl-draw to draw by default.
+                    // The user does not have to click the polygon control button first.
+                    defaultMode: 'draw_polygon'
+                });
+                map.addControl(draw);
+
+                function updateArea(){
+                    var locationInput = document.getElementById('id_location');
+                    var data = draw.getAll();
+                    data = data['features'][0]['geometry'];
+                    locationInput.value = JSON.stringify(data);
+                }
 
                 var checked_areas = [];
 

@@ -10,9 +10,9 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required, permission_required
 from iMap.settings import BASE_DIR, GEOCODER_API_KEY
 from .models import AreaOfInterest, NatureReserve, ObservationTest
-from users.models import CitizenScientist
+from users.models import CitizenScientist, Scientist
 from iMap.settings import MEDIA_ROOT
-from .forms import UploadImageForm
+from .forms import UploadImageForm, AreaForm
 
 
 # Create your views here.
@@ -70,3 +70,18 @@ class UploadView(PermissionRequiredMixin, CreateView):
         obj.user = citizen_scientist
         obj.save()
         return super(UploadView, self).form_valid(form)
+
+
+@method_decorator(login_required, name="dispatch")
+class CreateArea(CreateView):
+    model = AreaOfInterest
+    form_class = AreaForm
+    template_name = "observations/create_area.html"
+    success_url = reverse_lazy('home')
+    
+    def form_valid(self, form):
+        obj = form.save(commit=False)
+        scientist = Scientist.objects.get(user=self.request.user)
+        obj.scientist = scientist
+        obj.save()
+        return super(CreateArea, self).form_valid(form)
