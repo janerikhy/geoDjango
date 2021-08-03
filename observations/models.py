@@ -120,6 +120,15 @@ class AreaOfInterest(models.Model):
         else:
             return False
 
+    def plot_data(self):
+        dates_count = {}
+        for obs in self.observations.all():
+            # Get date as string instance
+            date = obs.obs_date.strftime("%m/%d/%y")
+            dates_count.setdefault(date, 0)
+            dates_count[date] += 1
+        return dates_count
+
     def __str__(self):
         return self.name
     

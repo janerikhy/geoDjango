@@ -49,6 +49,12 @@ class ProjectDetailView(DetailView):
     model = Project
     template_name = "projects/detail_project.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['data'] = self.plot_data()
+        
+        return context
+
 
 @login_required
 def joinProject(request, pk):
