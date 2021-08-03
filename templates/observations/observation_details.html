@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+<div class="container-fluid" style="height: 100%;">
+    <div class="card mx-auto" style="width: 25rem; margin-top: 9.5rem;">
+        <img src="{{object.image.url}}" alt="" class="card-img-top">
+        <div class="card-body">
+            <h5 class="card-title">User: {{object.user}}</h5>
+            <p class="card-text"><strong>Predictions:</strong></p>
+            {% for label, score in prediction.items %}
+            <div class="row justify-content-end">
+                <div class="col-6">{{label}}</div>
+                <div class="col-6">{{score}} %</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

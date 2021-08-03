@@ -1,11 +1,20 @@
+ 6-project-model
 html, body {
     box-sizing: border-box;
 }
 
 .observation_img{
     display: block;
+
+
+.observation_popup{
+ master
     position: relative;
-    width: 20vw;
+    max-width: 15vw;
+}
+
+.observation_img {
+    width: 100%;
 }
 
 body{
@@ -32,4 +41,31 @@ nav .container a i {
     color: whitesmoke !important; 
 }
 
+ 6-project-model
 /*     PROJECT FORM      */
+
+
+.filter {
+    position: relative;
+    z-index: 10;
+    top: 0;
+    left: 0;
+}
+
+.filter ul {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+
+.filter ul li {
+    list-style: none;
+}
+
+.last_upload {
+    position: absolute;
+    bottom: 3vh;
+    left: 3vw;
+    z-index: 5;
+}
+ master

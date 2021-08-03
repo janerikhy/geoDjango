@@ -35,9 +35,18 @@
         </div>
       </nav>
     <div id='map'></div>
-    {% for obs in observations %}
-        {{obs.address}}
-    {% endfor %}
+    <div class="filter" id="filter_box">        
+        <button class="btn btn-sm btn-secondary" id="display-area">Hide Areas</button>  
+    </div>
+
+    <div class="last_upload">
+        <button class="btn btn-sm btn-info rounded-pill text-light">
+            <a class="text-decoration-none text-light" href="{% url 'obs_detail' pk=last_observation.pk username=last_observation.user %}">
+            {{last_observation.user.user}} uploaded an observation: <i class="text-ligth" id="last-update">{{last_observation.upload_date|date:"r"}}</i>
+            </a>
+        </button>
+    </div>
+<script src="{% static 'js/last_upload.js' %}"></script>
     
 <script>
 // TO MAKE THE MAP APPEAR YOU MUST
@@ -47,32 +56,37 @@ mapboxgl.accessToken = 'pk.eyJ1Ijoib2NlYW5kYXRhZm91bmRhdGlvbiIsImEiOiJjazk5bGxpN
 var map = new mapboxgl.Map({
 container: 'map', // container id
 style: 'mapbox://styles/oceandatafoundation/ckbujyuqu0kah1kpbctq4lemg', // style URL
-center: [10.588725, 59.836199], // starting position [lng, lat]
-zoom: 10 // starting zoom
+center: [10.620725, 59.904199], // starting position [lng, lat]
+zoom: 12, // starting zoom
+pitch: 40
 });
 
 {% for area in areas %}
 
 map.on('load', function () {
 // Add a data source containing GeoJSON data.
-map.addSource('{{area.name}}', {
-        'type': 'geojson',
-        'data': {
-            'type': 'Feature',
-            'geometry': {{area.area.geojson|safe}} 
-    
-    }
-});
-map.addLayer({
-    'id': '{{area.name}}',
-    'type': 'fill',
-    'source': '{{area.name}}', // reference the data source
-    'layout': {},
-    'paint': {
-        'fill-color': '#0080ff', // blue color fill
-        'fill-opacity': 0.5
-    }
-});
+    map.addSource('{{area.name}}', {
+            'type': 'geojson',
+            'data': {
+                'type': 'Feature',
+                'geometry': {{area.area.geojson|safe}}
+        
+        }
+    });
+
+    map.addLayer({
+        'id': '{{area.name}}',
+        'type': 'fill',
+        'source': '{{area.name}}', // reference the data source
+        'layout': {
+            'visibility': 'visible'
+        },
+        'paint': {
+            'fill-color': '#0080ff', // blue color fill
+            'fill-opacity': 0.1
+        }
+    });
+
 });
 
 map.on('mouseenter', '{{area.name}}', ()=>{
@@ -94,21 +108,194 @@ map.on('click', '{{area.name}}', () => {
         .setHTML("<div class='lead'><a href='{% url 'aoi' area.id %}'> {{area.name}}</a></div>")
         .addTo(map);
 
-})
-
+});
 
 {% endfor %}
 
+map.on('load', () => {
+    map.addSource('observations-layer', obs_geojson);
+    map.addLayer({
+        'id': 'observations-layer',
+        'type': 'heatmap', //circle
+        'source': 'observations-layer',
+        'maxzoom': 20,
+        'paint': {
+            // Increase the heatmap weight based on frequency and property magnitude
+            /*
+            'heatmap-weight': [
+            'interpolate',
+            ['linear'],
+            ['get', 'mag'],
+            2,
+            5,
+            8,
+            10
+            ],*/
+            // Increase the heatmap color weight weight by zoom level
+            // heatmap-intensity is a multiplier on top of heatmap-weight
+            'heatmap-intensity': [
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            0,
+            3,
+            9,
+            5
+            ],
+            // Color ramp for heatmap.  Domain is 0 (low) to 1 (high).
+            // Begin color ramp at 0-stop with a 0-transparancy color
+            // to create a blur-like effect.
+            'heatmap-color': [
+            'interpolate',
+            ['linear'],
+            ['heatmap-density'],
+            0,
+            'rgba(33,102,172,0)',
+            0.2,
+            'rgb(103,169,207)',
+            0.4,
+            'rgb(209,229,240)',
+            0.6,
+            'rgb(253,219,199)',
+            0.8,
+            'rgb(239,138,98)',
+            1,
+            'rgb(178,24,43)'
+            ],
+            // Adjust the heatmap radius by zoom level
+            'heatmap-radius': [
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            6,
+            10,
+            13,
+            20
+            ],
+            // Transition from heatmap to circle layer by zoom level
+            'heatmap-opacity': [
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            6,
+            1,
+            16,
+            0
+            ]
+
+        }
+        /*'paint': {
+            'circle-radius': 4,
+            'circle-color': '#B42222'
+        },
+        */
+        //'filter': ['==', '$type', 'Point']
+    }, 'waterway-label');
+
+    map.addLayer(
+        {
+        'id': 'observations-points',
+        'type': 'circle',
+        'source': 'observations-layer',
+        'minzoom': 14,
+        'paint': {
+            // Size circle radius by earthquake magnitude and zoom level
+            'circle-radius': [
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            7,
+            ['interpolate', ['linear'], ['get', 'mag'], 1, 1, 6, 4],
+            16,
+            ['interpolate', ['linear'], ['get', 'mag'], 1, 5, 6, 50]
+            ],
+            // Color circle by earthquake magnitude
+            'circle-color': [
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            0,
+            'rgba(33,102,172,0)',
+            2,
+            'rgb(103,169,207)',
+            6,
+            'rgb(209,229,240)',
+            10,
+            'rgb(253,219,199)',
+            14,
+            'rgb(239,138,98)',
+            24,
+            'rgb(178,24,43)'
+            ],
+            'circle-stroke-color': 'white',
+            'circle-stroke-width': 1,
+            // Transition from heatmap to circle layer by zoom level
+            'circle-opacity': [
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            14,
+            0,
+            19,
+            1
+            ]
+            }
+            },
+        'waterway-label'
+        );
 
 
+
+    map.on('click', 'observations-points', function (e) {
+        var coordinates = e.features[0].geometry.coordinates.slice();
+        var description = e.features[0].properties.description;
+        console.log(description)
+        
+        // Ensure that if the map is zoomed out such that multiple
+        // copies of the feature are visible, the popup appears
+        // over the copy being pointed to.
+        while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+        coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+        }
+        
+        new mapboxgl.Popup()
+        .setLngLat(coordinates)
+        .setHTML(description)
+        .addTo(map);
+        });
+        
+        // Change the cursor to a pointer when the mouse is over the places layer.
+        map.on('mouseenter', 'observations-points', function () {
+        map.getCanvas().style.cursor = 'pointer';
+        });
+        
+        // Change it back to a pointer when it leaves.
+        map.on('mouseleave', 'observations-points', function () {
+        map.getCanvas().style.cursor = '';
+});
+});
+
+{% for area in areas %}
+console.log('{{area.name}}');
+{% endfor %}
+
+var zoom = map.getZoom();
+console.log(zoom);
 
 // Iterating through all of the observations in the database. 
+/*
 {% for observation in observations %}
     var marker = new mapboxgl.Marker()
     .setLngLat([{{observation.lon}}, {{observation.lat}}])
-    .setPopup(new mapboxgl.Popup().setHTML("<div class='lead'>{{observation.obs_date|date:'D d M Y H:i'}}</div><img class='observation_img' src={{observation.image.url}}>"))
+    .setPopup(new mapboxgl.Popup().setHTML("<div class='lead'>{{observation.obs_date|date:'D d M Y H:i'}}</div><a href={% url 'obs_detail' pk=observation.pk username=observation.user %}><img class='observation_img' src={{observation.image.url}}></a>"))
     .addTo(map);
+
 {% endfor %}
+*/
+var obs_geojson = {{observation_geojson|safe}}
+console.log(obs_geojson)
+
+
 
 map.on('mouseenter', '.marker', () => {
     map.getCanvas().style.cursor = "pointer";
@@ -116,6 +303,32 @@ map.on('mouseenter', '.marker', () => {
 
 map.on('mouseleave', 'marker', () => {
     map.getCanvas().style.cursor = "";
+});
+
+
+var area_btn = document.getElementById("display-area")
+area_btn.addEventListener('click', () => {
+    {% for area in areas %}
+    var visibility = map.getLayoutProperty(
+        '{{area.name}}',
+        'visibility'
+    );
+    if (visibility == 'visible'){
+        map.setLayoutProperty(
+            '{{area.name}}',
+            'visibility',
+            'none'
+        );
+        area_btn.innerText = 'Show Areas';
+    } else {
+        map.setLayoutProperty(
+            '{{area.name}}',
+            'visibility',
+            'visible'
+        );
+        area_btn.innerTest = 'Hide Areas';
+    }
+    {% endfor %}
 });
 
 </script>
