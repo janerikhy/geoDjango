@@ -12,11 +12,9 @@ from iMap.settings import BASE_DIR, GEOCODER_API_KEY
 from .models import AreaOfInterest, NatureReserve, ObservationTest
 from users.models import CitizenScientist, Scientist
 from iMap.settings import MEDIA_ROOT
- 6-project-model
 from .forms import UploadImageForm, AreaForm
 from .utils import predict_img
 import json
- master
 
 
 # Create your views here.
@@ -108,7 +106,7 @@ class UploadView(PermissionRequiredMixin, CreateView):
         return super(UploadView, self).form_valid(form)
 
 
- 6-project-model
+
 @method_decorator(login_required, name="dispatch")
 class CreateArea(CreateView):
     model = AreaOfInterest
@@ -131,4 +129,4 @@ class ObservationDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         _, context['prediction'] = predict_img(self.object.image.path)
         return context
- master
+
