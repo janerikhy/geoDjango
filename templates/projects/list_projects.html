@@ -1,0 +1,71 @@
+{% extends "base.html" %} 
+{% load static %}
+
+{% block title %} Projects {% endblock title%} 
+
+{% block content %} 
+<div class="container-fluid pb-4">
+    <div class="display-3 text-center">LIST OF PROJECTS</div>
+</div>
+
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-2">
+            <strong>Project name</strong>
+        </div>
+        <div class="col-2">
+            <strong>Description</strong>
+        </div>
+        <div class="col-2">
+            <strong>Participants</strong>
+        </div>
+        <div class="col-2">
+            <strong>Species:</strong>
+        </div>
+        <div class="col-2">
+            <strong>Intro Video:</strong>
+        </div>
+    </div>
+    <hr>
+    {% for project in object_list %}
+    {% if project.is_public %}
+    <div class="row">
+        <div class="col-2">
+            <a href="{% url 'project_detail' project.pk %}">
+                {{project.name}}
+            </a>
+        </div>
+        <div class="col-2">
+            {{project.description}}
+        </div>
+        <div class="col-2">
+            <ul>
+                {% for participant in project.participants.all %} 
+                   <li>{{participant.user.username}}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="col-2">
+            <img class="img-fluid" src="{{project.image.url}}" alt="">
+            <ul>
+                {% for obj in project.species.all %} 
+                <li>{{obj.common_name}}</li>
+                {% endfor %}
+            </ul>
+            
+        </div>
+        <div class="col-2">
+            <video class="img-fluid" controls>
+                <source src="{{project.video.url}}" type="video/mp4">
+            </video>
+        </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+    <hr>
+</div>
+
+
+{% endblock content %}

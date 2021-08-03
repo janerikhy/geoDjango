@@ -1,0 +1,318 @@
+{% extends 'base.html '%}
+
+{% load static %}
+
+{% block css_styles %}
+<script src="{% url 'js-catalog' %}"></script>
+<script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+<script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.2.2/mapbox-gl-draw.js"></script>
+<link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.2.2/mapbox-gl-draw.css" type="text/css">
+<script src="{% static '/admin/js/core.js' %}"></script>
+<link rel="stylesheet" href="{% static 'admin/css/widgets.css' %}" />
+<script src='https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.js'></script>
+<link href='https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.css' rel='stylesheet' /> 
+<!--<link rel="stylesheet" href="{% static 'admin/css/base.css' %}">-->
+<link rel="stylesheet" href="{% static 'css/project_form.css ' %}">
+
+{% endblock css_styles %} 
+
+{% block title %} Create Project {% endblock title%}
+
+{% block content %}
+{% load project_extras %}
+
+<div class="container-fluid d-flex flex-row justify-content-center align-items-center bg-secondary form-container" style="overflow:visible">
+    
+    <div class="form-holder">
+        <div class="col-10 mx-auto">
+            <div class="display-4 mt-3">Create Project</div>
+            <div class="progress-bar-row d-flex flex-row">
+                <div class="progress-bar-icon mx-1 complete"></div>
+                <div class="progress-bar-icon mx-1"></div>
+                <div class="progress-bar-icon mx-1"></div>
+                <div class="progress-bar-icon mx-1"></div>
+                <div class="progress-bar-icon mx-1"></div>
+                <div class="progress-bar-icon mx-1"></div>
+            </div>
+            <hr>
+            <form action="" method="POST" enctype="multipart/form-data" class="form">
+                {% csrf_token %}
+                <!-- GENERAL -->
+                {{form.non_field_errors}}
+                
+                <div class="form-tab active" id="general">
+                    <div class="project-name mt-4">
+                        {{form.name.errors}}
+                        <p><strong>Project {{form.name.label_tag}}</strong></p> 
+                        {{form.name}}
+                    </div>
+                    <hr>
+                    {{form.media}}
+                    <div class="row mt-5">
+                        <p><strong>Timeline</strong></p>
+                        {{form.start_time.errors}}
+                        <div class="col-6 project-start_time">
+                            {{form.start_time.label_tag}}
+                            {{form.start_time}}
+                        </div>
+                        <div class="col-6 project-end_time">
+                            {{form.end_time.errors}}
+                            {{form.end_time.label_tag}}
+                            {{form.end_time}}
+                        </div>
+                    </div>
+                    <p class="mt-5"><strong>Public project: </strong>{{form.is_public}}</p>
+                    
+                </div>
+                <!--  LOCATION -->
+                <div class="form-tab" id="location">
+                    
+                    <div class="row">
+                    
+                        <div class="col-9">
+                            
+                            <p><strong>Project Area</strong></p>
+                            {{form.location.errors}}
+                            {{form.location}}
+                            <!--<div id="form_map" style="width:100%; height: 100%;"></div>-->
+                            <!--<textarea id="id_location" class="vSerializedField required" cols="150" rows="10" name="location" style="display: none;"></textarea>-->
+                        </div>
+                        <div class="col-3 d-flex flex-column" id="areas">
+                            <!--THE LIST OF AREAS GOES HERE. On clich, display area in map-->
+                            <p><strong>Other Areas</strong></p>
+                            <!--
+                            {% for key, area in form.areas.field.choices %}            
+                            <label for="id_areas_{{forloop.counter0}}" class="btn btn-outline-primary {% if key|to_str in form|formfield_value:'areas' %}active{% endif %}" >
+                                <input id="id_areas_{{forloop.counter0}}" name="areas" type="checkbox" value="{{key}}" {% if key|to_str in form|formfield_value:'areas' %}checked{%endif%} 
+                                autocomplete="off" >
+                                {{area}}
+                            </label>
+                            {% endfor %}
+                            -->
+                            <div id="add_area">
+                                <a href="{% url 'create-area' %}">
+                                    <i class="fas fa-plus"></i> Add area
+                                </a>
+                            </div>
+                        </div>                        
+                    </div>
+                    <!-- Not sure whether to render the Mapbox GL map or the admin map -->
+                    
+                </div>
+                <!-- Project Details -->
+                <div class="form-tab" id="details">
+                    <p><strong>Species of Interest</strong></p>
+                    {{form.species.errors}}
+                    
+                    {% for key, spec in form.species.field.choices %}               
+                    <label for="id_species_{{forloop.counter0}}" class="btn btn-outline-primary {% if key|to_str in form|formfield_value:'species' %}active{% endif %}" >
+                        <input id="id_species_{{forloop.counter0}}" name="species" type="checkbox" value="{{key}}" {% if key|to_str in form|formfield_value:'species' %}checked{%endif%} 
+                        autocomplete="off" >
+                        {{spec}}
+                    </label>
+                    {% endfor %}
+
+                    <p><strong>Environmental Details</strong></p>
+                    <hr>
+                    {{form.environments.errors}}
+                    
+                    {% for key, env in form.environments.field.choices %} 
+                    <!--<input type="checkbox" class="btn-check" value="{{env.id_for_label}}" autocomplete="off"></input>-->
+                    
+                    <label for="id_environments_{{forloop.counter0}}" class="btn btn-outline-primary {% if key|to_str in form|formfield_value:'environments' %}active{% endif %}">
+                        <input id="id_environments_{{forloop.counter0}}" name="environments" type="checkbox" value="{{key}}" {% if key|to_str in form|formfield_value:'environments' %}checked{% endif %}
+                        autocomplete="off">
+                        {{env}}
+                    </label>
+                    {% endfor %}
+                    
+
+                    <!-- Add activities to the model before displaying here-->
+                    <p class="mt-5"><strong>Activities</strong></p>
+                    
+                </div>
+                <!-- Challenges and Engagement -->
+                <div class="form-tab" id="challenges">
+                    <p><strong>Challenges</strong></p>
+                    {{form.challenges.errors}}
+                    {% for key, challenge in form.challenges.field.choices %}
+                    
+                    <label for="id_challenges_{{forloop.couner0}}" class="btn btn-outline-primary {% if key|to_str in form|formfield_value:'challenges' %}active{% endif %}">
+                        <input type="checkbox" name="challenges" id="id_challenges_{{forloop.counter0}}" {% if key|to_str in form|formfield_value:'challenges' %}checked{% endif %} 
+                        value="{{key}}" autocomplete="off">
+                        {{challenge}}
+                    </label>
+                    
+                    {% endfor %}
+         
+                </div>
+                <!-- Organizers and collaborators -->
+                <div class="form-tab" id="organizers">
+                    <p><strong>Organizers:</strong></p>
+                    {{form.organizers.errors}}
+                    {% for key, org in form.organizers.field.choices %} 
+                    <label for="id_organizers_{{forloop.counter0}}" class="btn btn-outline-primary {% if key|to_str in form|formfield_value:'organizers' %}active{% endif %}">
+                        <input type="checkbox" name="organizers" id="id_organizers_{{forloop.counter0}}" {% if key|to_str in form|formfield_value:'organizers' %}checked{% endif %}
+                         value="{{key}}" autocomplete="on">
+                        {{org}}
+                    </label>
+                    {% endfor %}
+                    <hr>
+
+                    <p class="mt-3"><strong>Collaborators</strong></p>
+                    {% for key, collab in form.sponsors.field.choices %}
+                    <label for="id_sponsors_{{forloop.counter0}}" class="btn btn-outline-primary {% if key|to_str in form|formfield_value:'sponsors' %}active{% endif %}">
+                        <input type="checkbox" name="organizers" id="id_sponsors_{{forloop.counter0}}"
+                         value="{{key}}" autocomplete="on" {% if key|to_str in form|formfield_value:'sponsors' %}checked{% endif %}> 
+                        {{collab}}
+                    </label>                              
+                    {% endfor %}
+                </div>
+                <!-- Description -->
+                <div class="form-tab" id="description">
+                    <p><strong>Proect Description</strong></p>
+                    {{form.description.errors}}
+                    {{form.description}}
+                    <hr>
+                    <p><strong>Video:</strong></p>
+                    {{form.video.errors}}
+                    {{form.video}}
+                    <hr>
+                    <p><strong>Image:</strong></p>
+                    {{form.image.errors}}
+                    {{form.image}}
+                </div>
+                
+                <button type="button" class="btn btn-primary rounded-pill" id="prev">Prev</button>
+                <button type="button" class="btn btn-primary rounded-pill" id="next">Next</button>
+            </form>
+            <script>
+                /*
+                mapboxgl.accessToken = 'pk.eyJ1Ijoib2NlYW5kYXRhZm91bmRhdGlvbiIsImEiOiJjazk5bGxpNWkwYWU1M2Vya3hkcHh4czdrIn0.yf7kIiPfDNE7KP9_9wTN6A';
+                    var map = new mapboxgl.Map({
+                    container: 'form_map', // container id
+                    style: 'mapbox://styles/oceandatafoundation/ckbujyuqu0kah1kpbctq4lemg', // style URL
+                    center: [10.588725, 59.836199], // starting position [lng, lat]
+                    zoom: 8 // starting zoom
+                });
+
+                
+                map.on('load', function(){
+                    {% for area in form.areas.field.queryset.all %}
+
+                    map.addSource('{{area.name}}', {
+                            'type': 'geojson',
+                            'data': {
+                                'type': 'Feature',
+                                'geometry': {{area.area.geojson|safe}} 
+                        
+                        }
+                    });
+
+                    map.addLayer({
+                        'id': '{{area.name}}',
+                        'type': 'fill',
+                        'source': '{{area.name}}', // reference the data source
+                        'layout': {
+                            'visibility': 'none'
+                        },
+                        'paint': {
+                            'fill-color': '#0080ff', // blue color fill
+                            'fill-opacity': 0.5
+                        }
+                    });
+
+                    {% endfor %}
+                });
+
+                map.on('idle', function(){
+                    {% for area in form.areas.field.queryset.all %}
+                        if (document.getElementById('id_areas_{{forloop.counter0}}').checked){
+                            map.setLayoutProperty('{{area.name}}', 'visibility', 'visible');
+                        } else {
+                            map.setLayoutProperty('{{area.name}}', 'visibility', 'none');
+                        }
+                    {% endfor %}
+                });
+
+                var draw = new MapboxDraw({
+                    displayControlsDefault: false,
+                    // Select which mapbox-gl-draw control buttons to add to the map.
+                    controls: {
+                    polygon: true,
+                    trash: true
+                    },
+                    // Set mapbox-gl-draw to draw by default.
+                    // The user does not have to click the polygon control button first.
+                    defaultMode: 'draw_polygon'
+                });
+                map.addControl(draw);
+
+                function updateArea(){
+                    var locationInput = document.getElementById('id_location');
+                    var data = draw.getAll();
+                    data = data['features'][0]['geometry'];
+                    locationInput.value = JSON.stringify(data);
+                }
+                */
+                var checked_areas = [];
+
+                var prev = document.querySelector("#prev");
+                var next = document.querySelector("#next");
+                var index = 1;
+                var progressbar = document.querySelectorAll(".progress-bar-icon");
+                var tabs = document.getElementsByClassName('form-tab');
+
+                
+
+                next.addEventListener('click', ()=>{
+                    if (index == 5){
+                        progressbar[index].classList.add('complete');
+                        tabs[index -1].classList.remove('active');
+                        tabs[index].classList.add('active');
+                        next.innerHTML = "Done";
+                        
+                        index++;   
+                    }
+                    else if (index < 5){
+                        tabs[index-1].classList.remove('active');
+                        progressbar[index].classList.add('complete');
+                        tabs[index].classList.add('active');
+                        index++;
+                        if (index-1 == 1){
+                            prev.classList.add('show');
+                        }
+                    }
+                    else if (index > 5){
+                        console.log('SUBMIT');
+                        next.type = "submit";
+                    }
+                    
+                });
+
+                prev.addEventListener('click', ()=> {
+                    if (index > 1) {
+                        console.log('Remove complete')
+                        if (index > 5){
+                            next.innerHTML = "Next"
+                        }
+                        index--;
+                        tabs[index].classList.remove('active');
+                        progressbar[index].classList.remove('complete');
+                        tabs[index-1].classList.add('active');
+                        if (index-1 == 0){
+                            prev.classList.remove('show');
+                        }
+                        
+                    }
+                    else{
+                        console.log('Not far enough');
+                    }
+                });
+                
+            </script>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

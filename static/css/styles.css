@@ -1,5 +1,14 @@
+ 6-project-model
+html, body {
+    box-sizing: border-box;
+}
+
+.observation_img{
+    display: block;
+
 
 .observation_popup{
+ master
     position: relative;
     max-width: 15vw;
 }
@@ -32,6 +41,9 @@ nav .container a i {
     color: whitesmoke !important; 
 }
 
+ 6-project-model
+/*     PROJECT FORM      */
+
 
 .filter {
     position: relative;
@@ -56,3 +68,4 @@ nav .container a i {
     left: 3vw;
     z-index: 5;
 }
+ master

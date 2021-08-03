@@ -1,0 +1,65 @@
+
+body {
+    overflow: hidden;
+    height: 100vh;
+}
+
+.form-container {
+    overflow: hidden;
+    background-color: rgba(67, 83, 112, 0.87);
+    height: 100%;
+}
+
+.form-holder {
+    position: relative;
+    display: block;
+    min-height: 70%;
+    min-width: 50vw;
+    background-color: white;
+}
+
+.form-holder .col-10 {
+    min-height: 20rem;
+}
+
+form{
+    height: 100%;
+}
+
+.progress-bar-icon {
+    display: block;
+    width: 1rem;
+    height: .2rem;
+    background-color: rgba(68, 50, 97, 0.2);
+    
+}
+
+.progress-bar-row .complete {
+    background-color: rgb(68, 50, 97);
+}
+
+.form-tab {
+    display: none;
+}
+
+.form-tab.active {
+    display: block;
+}
+
+#prev, #next {
+    position: absolute;
+    bottom: 5%;
+}
+
+#prev {
+    display: none;
+    left: 15%;
+}
+
+.form-holder form #prev.show {
+    display: block;
+}
+
+#next {
+    right: 15%;
+}

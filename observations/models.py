@@ -114,6 +114,16 @@ class AreaOfInterest(models.Model):
         Scientist, on_delete=models.CASCADE, null=True)
     observations = models.ManyToManyField(ObservationTest)
 
+    def inArea(self, point):
+        if self.area.contains(point):
+            return True
+        else:
+            return False
+
+    def __str__(self):
+        return self.name
+    
+
 
 """
 USERS AND OBSERVATIONS
