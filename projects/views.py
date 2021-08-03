@@ -1,9 +1,10 @@
+from django.http.response import HttpResponseRedirect
 from observations.models import AreaOfInterest
 from typing import Sized
 from django.shortcuts import get_object_or_404, render
 from django.views.generic import CreateView, DetailView, ListView
 from .models import Project
-from users.models import Scientist
+from users.models import CitizenScientist, Scientist
 from .forms import ProjectForm
 from django.urls import reverse_lazy
 from users.decorators import researcher_required
@@ -47,3 +48,21 @@ class ProjectDetailView(DetailView):
     # View for a specific project
     model = Project
     template_name = "projects/detail_project.html"
+
+
+@login_required
+def joinProject(request, pk):
+    if request.method == "GET": 
+        user = request.user
+        if user in [u.user for u in CitizenScientist.objects.all()]:
+            print(f"The users: {user}, is a citizen scientist")
+
+            project = get_object_or_404(Project, pk=pk)
+            cs = get_object_or_404(CitizenScientist, user=user)
+            if not project.participants.filter(user=user).exists():
+                project.participants.add(cs)
+                print(f"{user} added to {project}")
+    else:
+        print("METHOD WAS NOT GET")
+    
+    return HttpResponseRedirect(f'{pk}')

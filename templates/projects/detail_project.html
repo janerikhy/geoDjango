@@ -1,29 +1,124 @@
-{% extends "base.html" %} 
-{% load static %}
+{% extends "base.html" %} {% load static %} {% block title %} {{object.name}} 
+{% endblock title%} {% block content %}
 
-{% block title %} {{object.name}} {% endblock title%} 
-
-{% block content %}
 <style>
-    .jumbotron-fluid {
-        background-image: url({{object.image.url}});
-        background-size: contain;
-        background-repeat: no-repeat;
-        height: 40vh;
-    }
+  .jumbotron {
+    background-image: url({{object.image.url}});
+    background: linear-gradient(0deg,
+        rgba(230, 230, 230, 1.0),
+        rgba(0, 0, 0, 0)
+    ),
+    url({{object.image.url}});
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 60vh;
+  }
+
+  body {
+      background-color: rgba(230, 230, 230, 0.4);
+  }
+
+  .row {
+      margin-top: .2rem;
+      box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.4);
+      background-color: white;
+  }
+
+  .row .col-8 .row {
+      box-shadow: none;
+      margin: .1rem;
+  }
+  .project-name {
+      position: relative;
+      top: 60%;
+  }
+
 </style>
 
-.<div class="jumbotron jumbotron-fluid">
-    <div class="container">
-        <h1 class="display-3 text-center">{{object.name}}</h1>
+{% load detail_filter %}
+<div class="jumbotron">
+  <div class="container h-100">
+    <div class="display-3 project-name text-center align-self-end">
+        {{object.name}} <br>
+        <a role="button" type="submit" href="{% url 'join' pk=object.pk %}" class="btn btn-primary rounded-pill">
+            {% if project|user_joined:request.user %}JOINED <i class="far fa-check-circle" style="color: rgb(149, 231, 149);"></i>{%else%}JOIN NOW{%endif%}
+        </a>
     </div>
+  </div>
 </div>
 <div class="container">
     <div class="row">
-        <div class="col-8 text-center">
-            {{object.description}}
+        <p class="mx-auto"><strong>ORGANIZERS + COLLABORATORS</strong></p>
+        {% for org in object.organizers.all %}
+        <div class="col mx-auto">
+            <p>{{org.name}}</p>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="row project-details">
+      <div class="col-8">
+          <!-- Timespan -->
+          <div class="row mt-4">
+              <div class="col-2 mx-auto text-center">
+                  <i class="far fa-calendar-alt"></i>
+              </div>
+              <div class="col-10 mx-auto">
+                  <p>
+                      <strong>Ongoing:</strong>
+                      {{object.start_time|date:'M, j, Y'}} to {{object.end_time|date:'M, j, Y'}}
+                  </p>
+            </div>
+          </div>
+          <!-- Goal -->
+          <div class="row mt-4">
+              <div class="col-2 text-center">
+                  <i class="fas fa-bullseye"></i>
+              </div>
+              <div class="col-10">
+                  <p><strong>Goal:</strong> Col for object goal must be added here...</p>
+
+              </div>
+          </div>
+          <!-- Age group -->
+          <div class="row mt-4">
+              <div class="col-2 text-center">
+                  <i class="far fa-smile"></i>
+              </div>
+              <div class="col-10"><p><strong>Age group:</strong> All ages!</p>
+            </div>
+          </div>
+          <!-- Equipment -->
+          <div class="row mt-4">
+              
+          </div>
         </div>
     </div>
+    <div class="row project-description">
+        <div class="col-10 ml-4 p-4">            
+            <p><strong>ACT NOW!</strong></p>
+            <p>{{object.description|linebreaks}}</p>
+        </div>
+    </div>
+    <div class="row">
+            <div class="card-group">
+
+                {% for area in object.areas.all %}
+                {% for obs in area.observations.all %}
+                <div class="card" style="min-width: 9rem; max-width: 10rem;">
+                    <img class="card-img-top" src="{{obs.image.url}}" alt="">
+                    <div class="card-body">
+                        <h4 class="card-title">{{obs.user}}</h4>
+                        <p class="card-text">{{obs.obs_date}}</p>
+                    </div>
+                    <div class="card-footer"><small class="text-muted">Uploaded: {{obs.upload_date|date:'M j h:m'}}</small></div>
+                </div>
+                {% endfor %} 
+                {% endfor %}
+                
+            </div>
+    </div>
 </div>
+
 
 {% endblock content %}
