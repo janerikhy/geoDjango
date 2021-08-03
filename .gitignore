@@ -96,6 +96,8 @@ venv.bak/
 
 # tensorflow models
 static/models/
+*static/models/
+.pb
 
 # mkdocs documentation 
 /site 
