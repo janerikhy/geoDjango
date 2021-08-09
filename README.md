@@ -7,3 +7,5 @@ Citizen scientist can upload observations documented by images of marine species
 Timestamp and location of an observation is extracted from the image by use of python libraries Pillow and GPSPhoto. 
 
 Observations and areas of interest are rendered on a map using Mapbox GL JS.
+
+In addition, a machine learning model for image classification was created using Tensorflow to differentiate between blue mussels and pacific oysters.
