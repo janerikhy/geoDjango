@@ -41,9 +41,13 @@
   <div class="container h-100">
     <div class="display-3 project-name text-center align-self-end">
         {{object.name}} <br>
+        {% if user.is_authenticated %}
         <a role="button" type="submit" href="{% url 'join' pk=object.pk %}" class="btn btn-primary rounded-pill">
             {% if project|user_joined:request.user %}JOINED <i class="far fa-check-circle" style="color: rgb(149, 231, 149);"></i>{%else%}JOIN NOW{%endif%}
         </a>
+        {% else %}
+        <a role="button" href="{% url 'login' %}" class="btn btn-primary rounded-pill">Log in to join</a>
+        {% endif %}
     </div>
   </div>
 </div>
