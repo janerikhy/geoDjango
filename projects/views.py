@@ -37,7 +37,6 @@ class ProjectCreateView(CreateView):
 
 
 
-
 class ProjectsListView(ListView):
     # View for displaying all existing projects, filtered by distance from your location
     model = Project
@@ -51,8 +50,8 @@ class ProjectDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['data'] = self.plot_data()
-        
+        context['data'] = self.object.areas.first().plot_data()
+        context['obs_data'] = self.object.observation_data()
         return context
 
 

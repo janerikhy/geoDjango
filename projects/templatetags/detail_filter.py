@@ -10,3 +10,8 @@ def user_joined(project, user):
         return True
     else:
         return False
+
+
+@register.filter()
+def dict_to_list(dict_list):
+    return list(dict_list)

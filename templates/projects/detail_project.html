@@ -100,6 +100,59 @@
             <p>{{object.description|linebreaks}}</p>
         </div>
     </div>
+    <div class="row project-graph">
+        <canvas id="observation-plot">
+
+        </canvas>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0/dist/Chart.min.js"></script>
+        <script>
+
+            const observation_data = {{obs_data|safe}}
+
+            const labels = [
+                {% for key in obs_data.keys %}
+                '{{key}}',
+                {% endfor %}
+            ];
+
+            const data = {
+                labels: labels,
+                datasets: [{
+                    label: '{{object.name}}',
+                    backgroundColor: 'rgba(32, 10, 58, 0.75)',
+                    borderColor: 'rgb(32, 10, 58)',
+                    data: {{obs_data.values|dict_to_list}},
+                }]
+            };
+            /* BLUE R*/
+            const config = {
+                type: 'line',
+                data,
+                options: {
+                    scales: {
+                        yAxes: [{
+                            display: true,
+                            gridLines: {
+                                display: false
+                            }
+                            /*beginAtZero: true*/
+                        }],
+                        xAxes: [{
+                            gridLines: {
+                                display: false
+                            }
+                        }]
+                    }
+                }
+            };
+            
+            var myChart = new Chart(
+                document.getElementById("observation-plot"),
+                config
+            );
+
+        </script>
+    </div>
     <div class="row">
             <div class="card-group">
 

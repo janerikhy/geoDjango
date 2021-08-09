@@ -5,7 +5,7 @@ from observations.models import AreaOfInterest
 from challenges.models import Challange
 import datetime
 from django.contrib.gis.geos import Polygon
-
+import pytz
 from django.core.validators import FileExtensionValidator
 # Create your models here.
 
@@ -109,6 +109,27 @@ class Project(models.Model):
 
     def observation_is_valid(self, date, location) -> bool:
         return any([area.inArea(location) for area in self.areas.all()]) and self.in_timerange(date)
+
+    def observation_data(self):
+        print("Running observation_data()")
+        data = {}
+        min_date = self.start_time
+        max_date = pytz.UTC.localize(datetime.datetime.today())
+        date_iter = min_date
+        while date_iter < max_date:
+            date_str = date_iter.strftime("%m/%d/%y")
+            data.setdefault(date_str, 0)
+            date_iter += datetime.timedelta(days=1)
+        print(f"Initialized data as: {data}")
+        for area in self.areas.all():
+            for obs in area.observations.all().order_by('-obs_date'):
+                if self.in_timerange(obs.obs_date):
+                    date_str = obs.obs_date.strftime("%m/%d/%y")
+                    data.setdefault(date_str, 0)
+                    data[date_str] += 1
+        print(f"Final data dict: {data}")
+        return data
+
 
     def find_challenges(self, **kwargs):
         """

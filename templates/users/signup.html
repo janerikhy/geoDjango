@@ -1,16 +1,27 @@
 {% extends "base.html" %} 
 {% load static %}
 
-{% block css_styles %} <link type="text/css" href="{% static 'css/styles.css' %}" rel="stylesheet"> {% endblock css_styles %}
+{% block css_styles %}
+<link  href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous"/>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+<script src="https://kit.fontawesome.com/ab01cf2660.js"  crossorigin="anonymous"></script>
+<link type="text/css" href="{% static 'css/styles.css' %}" rel="stylesheet">
+{% endblock css_styles %}
 
 {% block title %}SIGN UP{% endblock title %} 
 
 {% block content %}
-<div class="container">
-    <div class="jumbotron">
-        <button class="btn"><a href="{% url 'sign_up_cs'%}">Citizen Scientist</a></button>
-        <button class="btn"><a href="{% url 'sign_up_researcher' %}">Researcher/Organization</a></button>
-    </div>
+<div class="jumbotron-fluid" style="height: 95vh;">
+    
+        <div class="row h-100 m-0 w-100 text-center align-content-center">
+            <div class="col-6 h-100 d-flex align-items-center justify-content-center bg-secondary">
+                <a role="button" class="btn btn-primary h-25 text-center align-content-center" href="{% url 'sign_up_cs'%}">Citizen Scientist</a>
+            </div>
+            <div class="col-6 d-flex align-items-center justify-content-center">
+                <a  role="button" class="btn btn-outline-primary h-25 text-center align-content-center" href="{% url 'sign_up_researcher' %}">Researcher/Organization</a>
+            </div>
+        </div>
+    
 </div>
 
 {% endblock content %}

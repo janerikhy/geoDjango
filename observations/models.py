@@ -129,25 +129,8 @@ class AreaOfInterest(models.Model):
             dates_count[date] += 1
         return dates_count
 
+
     def __str__(self):
         return self.name
     
 
-
-"""
-USERS AND OBSERVATIONS
-
-Each observation should be related to a specific user. In addition, the observation must contain
-some sort of information about what has been observed, i.e what species. 
-
-Further, there should be scientist users who could create areas on the map which they are interested
-in collecting data. If the user collects data whithin these areas, they should be rewarded with some
-amount of points depending on the "importance or the observation. 
-    - This indicates that AreaOfInterest is related to a researcher / scientist. 
-
-HOW TO RELATED AND CREATE THIS KIND OF DATABASE
-
-    - Observation containing a user field
-    - User should have list of observations. 
-
-"""
